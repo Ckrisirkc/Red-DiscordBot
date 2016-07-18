@@ -236,8 +236,8 @@ class Scheduler:
                 next_tuple = await self.queue.get()
                 next_time = next_tuple[0]
                 next_event = next_tuple[1]
-                if next_event.lower() in self.toRem:
-                    self.toRem.remove(next_event.lower())
+                if next_event.name.lower() in self.toRem:
+                    self.toRem.remove(next_event.name.lower())
                     continue
                 diff = next_time - curr_time
                 diff = diff if diff >= 0 else 0
