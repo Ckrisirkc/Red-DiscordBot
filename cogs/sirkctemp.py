@@ -17,34 +17,50 @@ class Sirkctemp:
         self.bot = bot
         self.responses = dataIO.load_json("data/sirkctemp/responses.json")
         self.forcedppl = {}
+    
+    async def _delAfterTime(self, msgs, time=20):
+        await asyncio.sleep(time)
+        for msg in msgs:
+            try:
+                self.bot.delete_message(msg)
+            except discord.Forbidden:
+                print("Cannot delete message, Forbidden")
+            except discord.NotFound:
+                print("Cannot delete message, Not Found")
 
     @commands.command(name="forcechan", no_pm=True, pass_context=True)
     @checks.admin_or_permissions(move_members=True)
     async def forceChannel(self, ctx, user : discord.Member, chan : discord.Channel):
         """Forces a user into a voice channel"""
         if not chan.type == discord.ChannelType.voice:
-            await self.bot.say("Channel must be a voice channel")
+            msg = await self.bot.say("Channel must be a voice channel")
+            await self._delAfterTime([ctx.message, msg])
             return
         if user.id == settings.owner:
-            await self.bot.say("I won't ever force my master to do anything!")
-            return
+            if not ctx.message.author.id == settings.owner:
+                msg = await self.bot.say("I won't ever force my master to do anything!")
+                await self._delAfterTime([ctx.message, msg])
+                return
         server = ctx.message.server
         if server.id not in self.forcedppl:
             self.forcedppl[server.id] = {}
         self.forcedppl[server.id][user.id] = chan
-        await self.bot.say("Will do!")
+        msg = await self.bot.say("Will do!")
         await self.checkforces(None, user)
+        await self._delAfterTime([ctx.message, msg])
         
     @commands.command(name="unforcechan", no_pm=True, pass_context=True)
     @checks.admin_or_permissions(move_members=True)
     async def unforceChannel(self, ctx, user : discord.Member):
         """unForces a user who is forced into a voice channel"""
         if not self._isForced(user):
-            await self.bot.say("User not chanForced")
+            msg = await self.bot.say("User not chanForced")
+            await self._delAfterTime([ctx.message, msg])
             return
         server = ctx.message.server
         del self.forcedppl[server.id][user.id]
-        await self.bot.say("Got it!")
+        msg = await self.bot.say("Got it!")
+        await self._delAfterTime([ctx.message, msg])
     
     def _isForced(self, member):
         server = member.server
@@ -60,8 +76,39 @@ class Sirkctemp:
         if toChan is None:
             return
         if not after.voice_channel == toChan:
-            await self.bot.move_member(after, toChan)
+            try:
+                await self.bot.move_member(after, toChan)
+            except:
+                print("Cannot move {} to {}".format(after.display_name, toChan.name))
+                
+
+    @commands.command(name="massmove", no_pm=True, pass_context=True)
+    @checks.admin_or_permissions(move_members=True)
+    async def massMove(self, ctx, frm : discord.Channel, to : discord.Channel):
+        """Moves everyone in one voice channel to another voice channel"""
+        if not (frm.type == discord.ChannelType.voice and to.type == discord.ChannelType.voice):
+            msg = await self.bot.say("Channels must be voice channels")
+            await self._delAfterTime([ctx.message, msg])
+            return
+        in_ch = len(frm.voice_members) + len(to.voice_members)
+        to_limit = to.user_limit
+        if (in_ch > to_limit):
+            msg = await self.bot.say("The channel you want to move to does not have enough space in it.")
+            await self._delAfterTime([ctx.message, msg])
+            return
             
+        if not ctx.message.author in frm.voice_members:
+            if not ctx.message.author.id == settings.owner:
+                msg = await self.bot.say("You must be in the channel you want to move from to use this command")
+                await self._delAfterTime([ctx.message, msg])
+                return
+        for member in frm.voice_members:
+            try:
+                await self.bot.move_member(member, to)
+            except:
+                print("Cannot move {} to {}".format(after.display_name, toChan.name))
+        
+
 def check_folders():
     if not os.path.exists("data/sirkctemp"):
         print("Creating data/sirkctemp folder...")

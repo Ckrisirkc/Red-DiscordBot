@@ -1,11 +1,12 @@
 # import discord
 from discord.ext import commands
 from .utils.dataIO import fileIO
+from datetime import datetime
 import os
 
 
 class Away:
-    """Le away cog"""
+    """The Away cog"""
     def __init__(self, bot):
         self.bot = bot
         self.away_data = 'data/away/away.json'
@@ -23,7 +24,17 @@ class Away:
                     else:
                         msg = '{} is currently away and has set a personal message: {}'.format(mention.name, data[mention.mention]['MESSAGE'])
                     await self.bot.send_message(message.channel, msg)
-
+        data2 = fileIO(self.away_data, 'load')
+        if message.author.mention in data:
+            msg = await self.bot.send_message(message.channel, 'Hey {}, welcome back. `(No longer set as away)`'.format(message.author.display_name))
+            del data2[message.author.mention]
+            fileIO(self.away_data, 'save', data2)
+            await asyncio.sleep(15)
+            try:
+                await self.bot.delete_message(msg)
+            except:
+                print("Could not delete return message")
+                
     @commands.command(pass_context=True, name="away")
     async def _away(self, context, *message: str):
         """Tell the bot you're away or back."""

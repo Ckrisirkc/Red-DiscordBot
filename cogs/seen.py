@@ -20,7 +20,7 @@ class Seen:
             author = message.author
             channel = message.channel
             content = message.content
-            timestamp = message.timestamp.astimezone(eastern)
+            timestamp = message.timestamp.astimezone(eastern) # TODO
             if server.id not in data:
                 data[server.id] = {}
             if author.id not in data[server.id]:
