@@ -8,6 +8,7 @@ from cogs.utils.chat_formatting import escape_mass_mentions
 import os
 import logging
 import asyncio
+from copy import deepcopy
 
 
 class Sirkctemp:
@@ -108,7 +109,21 @@ class Sirkctemp:
             except:
                 print("Cannot move {} to {}".format(after.display_name, toChan.name))
     
-    
+    @commands.command(pass_context=True)
+    @checks.is_owner()
+    async def quickcmd(self, ctx, *, command):
+        """Runs the [command] and instantly deletes the message DON'T ADD A PREFIX
+        """
+        new_msg = deepcopy(ctx.message)
+        try:
+            await self.bot.delete_message(ctx.message)
+        except:
+            print("error deleting insta msg")
+        
+        new_msg.content = self.bot.command_prefix[0] + command
+        await self.bot.process_commands(new_msg)
+        await self.bot.purge_from(ctx.channel, after=ctx.message, check=lambda x: return x.author == self.bot.user or x.author == ctx.author)
+      
 
 def check_folders():
     if not os.path.exists("data/sirkctemp"):
