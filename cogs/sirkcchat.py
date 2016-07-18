@@ -18,6 +18,8 @@ class SirkcChat:
         self.chanList = {}
         self.recordList = {}
         self.defaultMon = False
+        self.r9kLimit = 5
+        self.trackLimit = 20
     
     async def _delAfterTime(self, msgs, time=20):
         await asyncio.sleep(time)
@@ -36,12 +38,12 @@ class SirkcChat:
     
     @commands.group(no_pm=True, pass_context=True)
     @checks.mod_or_permissions(manage_messages=True)
-    async def sirkcchat(self, ctx):
+    async def r9k(self, ctx):
         if ctx.invoked_subcommand is None:
             await send_cmd_help(ctx)
             return
     
-    @sirkcchat.command(name="limitspam", pass_context=True, no_pm=True)
+    @r9k.command(name="toggle", pass_context=True, no_pm=True)
     @checks.mod_or_permissions(manage_messages=True)
     async def limitSpam(self, ctx):
         chan = ctx.message.channel.id
@@ -53,6 +55,30 @@ class SirkcChat:
             msg = await self.bot.say("Okay, started monitoring this channel.")
         await self._delAfterTime([msg, ctx.message], time=7)
             
+    @r9k.command(name="limit", pass_context=True)
+    @checks.is_owner()
+    async def r9klimit(self, ctx, num : int):
+        """Sets the r9k identical message limit, must be larger than tracking limit"""
+        if (num < self.trackLimit):
+            self.r9kLimit = self.trackLimit
+        else:
+            self.r9kLimit = num
+        msg = await self.bot.say("r9k limit is now `{}`".format(self.r9kLimit))
+        await self._delAfterTime([ctx.message, msg], time=10)
+            
+    @r9k.command(name="track", pass_context=True)
+    @checks.is_owner()
+    async def r9ktrack(self, ctx, num : int):
+        """Sets the amount of messages to track per user per channel"""
+        if (num < self.r9kLimit):
+            self.r9kLimit = num
+            self.trackLimit = num
+            msg = "Set the tracking limit AND r9k limit to `{}`".format(num)
+        else:
+            self.trackLimit = num
+            msg = "Set the tracking limit to `{}`".format(num)
+        snd = await bot.say(msg)
+        await self._delAfterTime([ctx.message, snd], time=10)
 
     async def spamChecker(self, message):
         if not message.channel.id in self.recordList:
@@ -60,7 +86,7 @@ class SirkcChat:
         if not message.author.id in self.recordList[message.channel.id]:
             self.recordList[message.channel.id][message.author.id] = []
         #mcontent = message.content
-        if len(self.recordList[message.channel.id][message.author.id]) >= 10:
+        if len(self.recordList[message.channel.id][message.author.id]) >= self.trackLimit:
             del self.recordList[message.channel.id][message.author.id][0]
         self.recordList[message.channel.id][message.author.id].append(message)
         
@@ -75,8 +101,8 @@ class SirkcChat:
             else:
                 tempDict[msg.content.lower()] = tempDict[msg.content.lower()] + 1
         for ele in tempArray:
-            if tempDict[ele] >= 5:
-                logger.info("User {} is spamming the channel {} on server {}".format(message.author.display_name, message.channel.name, message.server.name))
+            if tempDict[ele] >= self.r9kLimit:
+                logger.info("User {} is over the r9k limit on the channel {} on server {}".format(message.author.display_name, message.channel.name, message.server.name))
                 for rem in self.recordList[message.channel.id][message.author.id]:
                     if ele in rem.content.lower():
                         await self._delAfterTime([rem], time=0)
