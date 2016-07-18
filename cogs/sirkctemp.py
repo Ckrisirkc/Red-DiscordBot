@@ -22,7 +22,7 @@ class Sirkctemp:
         await asyncio.sleep(time)
         for msg in msgs:
             try:
-                self.bot.delete_message(msg)
+                await self.bot.delete_message(msg)
             except discord.Forbidden:
                 print("Cannot delete message, Forbidden")
             except discord.NotFound:
@@ -111,7 +111,7 @@ class Sirkctemp:
     @commands.command(pass_context=True)
     async def sirkctest(self, ctx):
         msg = await self.bot.say("This is a test message to delete, deleting this and invoking message in 5s...")
-        self._delAfterTime([ctx.message, msg])
+        await self._delAfterTime([ctx.message, msg])
         
     
 
