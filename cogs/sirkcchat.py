@@ -58,8 +58,8 @@ class SirkcChat:
     @r9k.command(name="limit", pass_context=True)
     @checks.is_owner()
     async def r9klimit(self, ctx, num : int):
-        """Sets the r9k identical message limit, must be larger than tracking limit"""
-        if (num < self.trackLimit):
+        """Sets the r9k identical message limit, must be smaller than tracking limit"""
+        if (num > self.trackLimit):
             self.r9kLimit = self.trackLimit
         else:
             self.r9kLimit = num
@@ -77,7 +77,7 @@ class SirkcChat:
         else:
             self.trackLimit = num
             msg = "Set the tracking limit to `{}`".format(num)
-        snd = await bot.say(msg)
+        snd = await self.bot.say(msg)
         await self._delAfterTime([ctx.message, snd], time=10)
 
     async def spamChecker(self, message):
