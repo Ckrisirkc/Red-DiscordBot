@@ -188,6 +188,7 @@ class Scheduler:
         self.save_events()
         await self.bot.say('"{}" has successfully been removed.'.format(name))
         if name.lower() in self.curRunning:
+            print("Event found in curRunning")
             self.toRem.append(name.lower())
             self.curRunning.remove(name.lower())
 
@@ -237,6 +238,7 @@ class Scheduler:
                 next_time = next_tuple[0]
                 next_event = next_tuple[1]
                 if next_event.name.lower() in self.toRem:
+                    print("event found in toRem, skipping...")
                     self.toRem.remove(next_event.name.lower())
                     continue
                 diff = next_time - curr_time
