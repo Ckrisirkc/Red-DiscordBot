@@ -38,7 +38,7 @@ class Sirkctemp:
             return
         if user.id == settings.owner:
             if not ctx.message.author.id == settings.owner:
-                msg = await self.bot.say("I won't ever force my master to do anything!")
+                msg = await self.bot.say("I won't ever force my owner to do anything!")
                 await self._delAfterTime([ctx.message, msg])
                 return
         server = ctx.message.server
@@ -92,7 +92,7 @@ class Sirkctemp:
             return
         in_ch = len(frm.voice_members) + len(to.voice_members)
         to_limit = to.user_limit
-        if (in_ch > to_limit):
+        if (in_ch > to_limit and to_limit != 0):
             msg = await self.bot.say("The channel you want to move to does not have enough space in it.")
             await self._delAfterTime([ctx.message, msg])
             return
