@@ -33,6 +33,7 @@ class Sirkctemp:
             self.forcedppl[server.id] = {}
         self.forcedppl[server.id][user.id] = chan
         await self.bot.say("Will do!")
+        await self.checkforces(None, user)
         
     @commands.command(name="unforcechan", no_pm=True, pass_context=True)
     @checks.admin_or_permissions(move_members=True)
@@ -59,7 +60,7 @@ class Sirkctemp:
         if toChan is None:
             return
         if not after.voice_channel == toChan:
-            await bot.move_member(after, toChan)
+            await self.bot.move_member(after, toChan)
             
 def check_folders():
     if not os.path.exists("data/sirkctemp"):
@@ -85,4 +86,4 @@ def setup(bot):
         logger.addHandler(handler)
     n = Sirkctemp(bot)
     bot.add_listener(n.checkforces, "on_voice_state_update")
-    bot.add_cog()
+    bot.add_cog(n)
