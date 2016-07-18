@@ -86,7 +86,7 @@ def check_folders():
         print("Creating data/sirkcchat folder...")
         os.makedirs("data/sirkcchat")
 
-def check_files():
+#def check_files():
 
     #f = "data/sirkcchat/responses.json"
     #if not fileIO(f, "check"):
@@ -96,7 +96,7 @@ def check_files():
 def setup(bot):
     global logger
     check_folders()
-    check_files()
+    #check_files()
     logger = logging.getLogger("sirkcchat")
     if logger.level == 0: # Prevents the logger from being loaded again in case of module reload
         logger.setLevel(logging.INFO)
