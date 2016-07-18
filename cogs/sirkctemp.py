@@ -108,11 +108,6 @@ class Sirkctemp:
             except:
                 print("Cannot move {} to {}".format(after.display_name, toChan.name))
     
-    @commands.command(pass_context=True)
-    async def sirkctest(self, ctx):
-        msg = await self.bot.say("This is a test message to delete, deleting this and invoking message in 5s...")
-        await self._delAfterTime([ctx.message, msg])
-        
     
 
 def check_folders():
