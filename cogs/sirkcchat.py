@@ -104,5 +104,5 @@ def setup(bot):
         handler.setFormatter(logging.Formatter('%(asctime)s %(message)s', datefmt="[%d/%m/%Y %H:%M]"))
         logger.addHandler(handler)
     n = SirkcChat(bot)
-    bot.add_listener(n.checkforces, "on_voice_state_update")
+    bot.add_listener(n.spamChecker, "on_message")
     bot.add_cog(n)
