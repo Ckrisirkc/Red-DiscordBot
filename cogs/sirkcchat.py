@@ -60,15 +60,15 @@ class SirkcChat:
         if not message.author.id in self.recordList[message.channel.id]:
             self.recordList[message.channel.id][message.author.id] = []
         #mcontent = message.content
-        if len(self.recordlist[message.channel.id][message.author.id]) >= 10:
-            del self.recordlist[message.channel.id][message.author.id][0]
-        self.recordlist[message.channel.id][message.author.id].append(message)
+        if len(self.recordList[message.channel.id][message.author.id]) >= 10:
+            del self.recordList[message.channel.id][message.author.id][0]
+        self.recordList[message.channel.id][message.author.id].append(message)
         
         if not (self._monitoringChannel(message.channel.id)):
             return
         tempDict = {}
         tempArray = []
-        for msg in self.recordlist[message.channel.id][message.author.id]:
+        for msg in self.recordList[message.channel.id][message.author.id]:
             if msg.content.lower() not in tempDict:
                 tempDict[msg.content.lower()] = 1
                 tempArray.append(msg.content.lower())
