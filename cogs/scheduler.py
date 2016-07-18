@@ -46,6 +46,8 @@ class Scheduler:
         self.queue = asyncio.PriorityQueue(loop=self.bot.loop)
         self.to_kill = []
         self._load_events()
+        self.toRem = []
+        self.curRunning = []
 
     def save_events(self):
         fileIO('data/scheduler/events.json', 'save', self.events)
@@ -166,6 +168,7 @@ class Scheduler:
         await self._add_event(name, command, server, channel, author, s, True)
         await self.bot.say('"{}" will run "{}" every {}s'.format(name, command,
                                                                  s))
+        self.curRunning.append(name.lower())
 
     @scheduler.command(pass_context=True, name="remove")
     async def _scheduler_remove(self, ctx, name):
@@ -184,6 +187,9 @@ class Scheduler:
         del self.events[server.id][name]
         self.save_events()
         await self.bot.say('"{}" has successfully been removed.'.format(name))
+        if name.lower() in self.curRunning:
+            self.toRem.append(name.lower())
+            self.curRunning.remove(name.lower())
 
     @scheduler.command(pass_context=True, name="list")
     async def _scheduler_list(self, ctx):
@@ -230,6 +236,9 @@ class Scheduler:
                 next_tuple = await self.queue.get()
                 next_time = next_tuple[0]
                 next_event = next_tuple[1]
+                if next_event.lower() in self.toRem:
+                    self.toRem.remove(next_event.lower())
+                    continue
                 diff = next_time - curr_time
                 diff = diff if diff >= 0 else 0
                 if diff < 30:
