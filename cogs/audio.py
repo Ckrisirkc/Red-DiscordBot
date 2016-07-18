@@ -461,7 +461,7 @@ class Audio:
 
     # TODO: _enable_controls()
 
-    # returns list of active voice channels 
+    # returns list of active voice channels
     # assuming list does not change during the execution of this function
     # if that happens, blame asyncio.
     def _get_active_voice_clients(self):
