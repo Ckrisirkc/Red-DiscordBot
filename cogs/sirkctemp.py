@@ -123,7 +123,8 @@ class Sirkctemp:
         new_msg.content = self.bot.command_prefix[0] + command
         await self.bot.process_commands(new_msg)
         await self.bot.purge_from(ctx.message.channel, after=ctx.message, check=lambda x:x.author == self.bot.user or x.author == ctx.message.author)
-      
+    
+    
 
 def check_folders():
     if not os.path.exists("data/sirkctemp"):
@@ -131,7 +132,6 @@ def check_folders():
         os.makedirs("data/sirkctemp")
 
 def check_files():
-
     f = "data/sirkctemp/responses.json"
     if not fileIO(f, "check"):
         print("Creating sirkctemp responses.json...")

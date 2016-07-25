@@ -20,7 +20,7 @@ class Seen:
             author = message.author
             channel = message.channel
             content = message.content
-            timestamp = message.timestamp.astimezone(eastern) # TODO
+            timestamp = message.timestamp #message.timestamp.astimezone(eastern) # TODO
             if server.id not in data:
                 data[server.id] = {}
             if author.id not in data[server.id]:
@@ -33,6 +33,22 @@ class Seen:
             data[server.id][author.id]['MESSAGE'] = content
             data[server.id][author.id]['CHANNEL'] = channel.mention
             fileIO(self.seen_path, 'save', data)
+            
+#    async def listener2(self, before, after):
+#        if after.id != self.bot.user.id:
+#            data = fileIO(self.seen_path, 'load')
+#            server = after.server
+#            if server.id not in data:
+#                data[server.id] = {}
+#            if after.id not in data[server.id]:
+#                data[server.id][after.id] = {}
+#            if after.nick:
+#                data[server.id][after.id]['NAME'] = '{} ({})'.format(after.name, after.nick)
+#            else:
+#                data[server.id][after.id]['NAME'] = after.name
+#            if after.status == discord.Status.offline:
+#                data[server.id][after.id]['LAST_ONLINE'] = datetime.now()
+#            data[server.id][after.id]
 
 
     @commands.command(pass_context=True, no_pm=True, name='seen', aliases=['s'])
